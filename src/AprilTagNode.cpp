@@ -100,7 +100,8 @@ AprilTagNode::AprilTagNode(const rclcpp::NodeOptions& options)
     // topics
     sub_cam(image_transport::create_camera_subscription(
         this,
-        this->get_node_topics_interface()->resolve_topic_name("image_rect"),
+        // this->get_node_topics_interface()->resolve_topic_name("image_rect"),
+        "/rgb/image_raw", // 240814: changed this to make foxy build
         std::bind(&AprilTagNode::onCamera, this, std::placeholders::_1, std::placeholders::_2),
         declare_parameter("image_transport", "raw", descr({}, true)),
         rmw_qos_profile_sensor_data)),
