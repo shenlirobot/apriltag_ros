@@ -15,7 +15,7 @@
             debug: 0            # write additional debugging images to current working directory
 
         # optional list of tags
-        # tag:
-        #     ids: [2]            # tag ID
-        #     frames: [base, object]  # optional frame name
-        #     sizes: [0.146]   # optional tag-specific edge size
+        tag:
+            ids: [549]          # tag ID
+            # frames: [object]  # optional frame name (will appear in published message. If unspecified, then use default.)
+            sizes: [0.146]      # optional tag-specific edge size
