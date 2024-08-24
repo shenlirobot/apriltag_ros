@@ -84,6 +84,9 @@ private:
 
     pose_estimation_f estimate_pose = nullptr;
 
+    // store the last detection
+    apriltag_msgs::msg::AprilTagDetectionArray last_detection_;
+
     void onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_img, const sensor_msgs::msg::CameraInfo::ConstSharedPtr& msg_ci);
 
     rcl_interfaces::msg::SetParametersResult onParameter(const std::vector<rclcpp::Parameter>& parameters);
@@ -195,11 +198,16 @@ void AprilTagNode::onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_i
                      i, det->family->nbits, det->family->h, det->id,
                      det->hamming, det->decision_margin);
 
+
+        // RCLCPP_INFO(get_logger(), "Detected tag ID: %d", det->id);
+        if(det->id != 546) { continue; }
+        
         // ignore untracked tags
         if(!tag_frames.empty() && !tag_frames.count(det->id)) { continue; }
 
         // reject detections with more corrected bits than allowed
         if(det->hamming > max_hamming) { continue; }
+
 
         // detection
         apriltag_msgs::msg::AprilTagDetection msg_detection;
@@ -211,6 +219,7 @@ void AprilTagNode::onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_i
         msg_detection.centre.y = det->c[1];
         std::memcpy(msg_detection.corners.data(), det->p, sizeof(double) * 8);
         std::memcpy(msg_detection.homography.data(), det->H->data, sizeof(double) * 9);
+
         msg_detections.detections.push_back(msg_detection);
 
         // 3D orientation and position
@@ -224,6 +233,16 @@ void AprilTagNode::onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_i
         }
 
         tfs.push_back(tf);
+    }
+
+
+    RCLCPP_INFO(get_logger(), "Detected: %d", msg_detections.detections.empty());
+
+
+    if (!msg_detections.detections.empty()) {
+        last_detection_ = msg_detections;
+    } else {
+        msg_detections = last_detection_;
     }
 
     pub_detections->publish(msg_detections);

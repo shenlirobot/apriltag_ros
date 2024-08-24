@@ -16,9 +16,9 @@
 
         # optional list of tags
         tag:
-            ids: [549, 546]          # tag ID
+            ids: [546]          # tag ID
             # frames: [object]  # optional frame name (will appear in published message. If unspecified, then use default.)
-            sizes: [0.146, 0.146]      # optional tag-specific edge size
+            sizes: [0.146]      # optional tag-specific edge size
             
             # ids: [546]
             # sizes: [0.146]
